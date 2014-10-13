@@ -33,9 +33,11 @@ function getBundler(file, opts) {
   var _opts = _.clone(opts);
   var transforms = _opts.transforms;
   delete _opts.transforms;
+  var watch = _opts.watch;
+  delete _opts.watch;
 
-  bundlers[file.path] =
-    logBundler(applyTransforms(createBundler(file, _opts, true), transforms)).on('update', function(){ cache[file.path] = true;  });
+  bundlers[file.path] = logBundler(applyTransforms(createBundler(file, _opts, typeof watch === 'undefined' || watch), transforms))
+      .on('update', function(){ cache[file.path] = true;  });
 
   cache[file.path] = true;
   return getBundler(file, opts);
