@@ -36,7 +36,7 @@ function getBundler(file, opts) {
   var watch = _opts.watch;
   delete _opts.watch;
 
-  bundlers[file.path] = logBundler(applyTransforms(createBundler(file, _opts, typeof watch === 'undefined' || watch), transforms))
+  bundlers[file.path] = logBundler(applyTransforms(createBundler(file, _opts, typeof watch === 'undefined' || watch), transforms, _opts.global))
       .on('update', function(){ cache[file.path] = true;  });
 
   cache[file.path] = true;
@@ -48,11 +48,11 @@ function createBundler(file, opts, watch) {
   return (watch ? watchify(browserify(file.path, _.extend(opts || {}, watchify.args))) : browserify(file.path, opts));
 }
 
-function applyTransforms (bundler, transforms) {
+function applyTransforms (bundler, transforms, globalOption) {
   transforms = transforms || [];
 
   _.each(transforms, function (t) {
-    bundler.transform(t);
+    bundler.transform({ global: globalOption }, t);
   })
 
   return bundler;
